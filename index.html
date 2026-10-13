@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#1f2344">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Children of Chaos: Stormbound Coast Remaster</title>
+<style>
+:root{
+  --bg:#11152a;--panel:#1f2950;--panel2:#31407a;--gold:#e1c97c;--ink:#0c1020;--text:#f6edd4;--muted:#aeb7d5;--line:#6c74a5;--red:#c95b74;--green:#63b782;--blue:#73b4e5;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#0b0d18;color:var(--text);font-family:'Trebuchet MS',Verdana,Arial,sans-serif;overscroll-behavior:none}
+body{background:radial-gradient(circle at top,#2a3460 0%,#13172b 40%,#080b14 100%)}
+#app{max-width:920px;margin:0 auto;padding:env(safe-area-inset-top) 10px calc(12px + env(safe-area-inset-bottom));min-height:100dvh}
+button,input,select{font:inherit}
+button{cursor:pointer;background:linear-gradient(#485aa8,#2b376b);color:var(--text);border:2px solid #b7c2f9;border-right-color:#232c56;border-bottom-color:#232c56;padding:9px 12px;min-height:40px;box-shadow:0 3px 0 #090c18;border-radius:0}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #090c18}
+button.gold{background:linear-gradient(#9e8654,#71582d);border-color:#f6e1a8 #433318 #433318 #f6e1a8}
+button.red{background:linear-gradient(#a54a63,#742c3f);border-color:#f0b0bd #4d1221 #4d1221 #f0b0bd}
+button.green{background:linear-gradient(#4d9770,#31664b);border-color:#bef0d6 #1e4533 #1e4533 #bef0d6}
+button.ghost{background:linear-gradient(#344064,#222a45)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.smallbtn{font-size:12px;min-height:32px;padding:6px 8px}
+.panel,.window{background:linear-gradient(#29356a,#1a2141);border:3px solid #9aa9e8;border-right-color:#121835;border-bottom-color:#121835;box-shadow:0 4px 0 #090d1b,inset 0 0 0 2px #4b569b;padding:10px;margin:10px 0}
+.window h2,.window h3,.panel h2,.panel h3{margin:0 0 8px;color:var(--gold);letter-spacing:.04em;text-shadow:2px 2px 0 #000}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px}
+header h1{margin:0;color:#fff5ce;font-size:clamp(22px,5vw,34px);line-height:1;letter-spacing:.08em;text-shadow:3px 3px 0 #000}
+.subtitle{color:var(--gold);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.statsbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill{display:inline-block;background:#0e1327;border:2px solid #8794c9;border-right-color:#232a4b;border-bottom-color:#232a4b;padding:4px 7px;font-size:12px;box-shadow:0 2px 0 #05080f}
+.row{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}.spread{justify-content:space-between}.col{display:grid;gap:10px}.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.gridbuttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.log{background:#0d1122;border:2px solid #515f99;border-right-color:#171d39;border-bottom-color:#171d39;min-height:78px;max-height:120px;overflow:auto;padding:8px;font-size:13px}.muted{color:var(--muted)}.notice{line-height:1.45;color:#eef0fd;background:#0e1429;border:2px solid #6674a9;padding:8px}.choice{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px;background:#121833;border:2px solid #5c6797}.choice b{color:#ffefbd}
+#battleCanvas,#sceneCanvas,#portraitCanvas{display:block;width:100%;image-rendering:pixelated;background:#111;border:3px solid #afbdff;border-right-color:#1d2852;border-bottom-color:#1d2852;box-shadow:0 3px 0 #090d1b}
+#battleCanvas{aspect-ratio:5/4;touch-action:none;max-width:100%}
+#sceneCanvas{aspect-ratio:2/1;max-width:100%}
+#portraitCanvas{aspect-ratio:1/1}
+.member{display:grid;grid-template-columns:58px 1fr auto;gap:8px;align-items:center;background:#121833;border:2px solid #5f6ea8;padding:7px}
+.meter{height:8px;background:#381a26;border:1px solid #000;overflow:hidden;margin-top:4px}.meter>i{display:block;height:100%;background:#e06780}.meter.mp{background:#16224b}.meter.mp>i{background:#7cc4ee}.xp{height:6px;background:#3f3a1b;border:1px solid #000}.xp>i{display:block;height:100%;background:#e0c15e}
+.charbadge{width:58px;height:58px;display:block;border:2px solid #9fabe0;background:#091021}
+.dialogbox{position:fixed;inset:0;background:#0008;display:flex;align-items:flex-end;justify-content:center;padding:12px;z-index:20}
+.dialogbox>.window{max-width:780px;width:min(100%,780px);margin:0;max-height:80vh;overflow:auto}
+.speaker{color:#ffefb6;font-weight:bold}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:30;background:#ffefb0;color:#1a1930;padding:10px 14px;border:3px solid #fff;border-right-color:#5c4a12;border-bottom-color:#5c4a12;display:none;box-shadow:0 4px 0 #000;font-weight:bold;max-width:90vw}
+.titlecard{text-align:center;padding:18px 10px;background:linear-gradient(#263567,#121730);border:3px solid #9aa9e8;border-right-color:#121835;border-bottom-color:#121835;box-shadow:0 4px 0 #090d1b,inset 0 0 0 2px #495599}
+.titleart{width:min(100%,500px);margin:10px auto;display:block;image-rendering:pixelated;border:3px solid #aebeff;border-right-color:#1d2852;border-bottom-color:#1d2852;box-shadow:0 4px 0 #090d1b}
+.footertext{font-size:12px;color:#9fb2d6;text-align:center;line-height:1.4}
+@media(max-width:700px){.two,.three,.toolbar{grid-template-columns:1fr}.member{grid-template-columns:58px 1fr}.member>div:last-child{grid-column:1 / -1}.statsbar{justify-content:flex-start}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+<script>
+'use strict';
+const SAVE_KEY='coc_stormbound_remaster_v1';
+const $=s=>document.querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rnd=n=>Math.floor(Math.random()*n);
+let G=null,B=null,view='title',dialog=null,audio=true,selectedPortrait=null;
+
+const heroes={
+  alabor:{name:'Alabor',cls:'Paladin',maxHp:36,maxMp:10,atk:11,def:7,mov:4,range:1,palette:{skin:'#d6b58b',hair:'#d9c67b',armor:'#cfcfcf',trim:'#9d7b32',cloth:'#3658a2',accent:'#c63f4e'},weapon:'sword',portrait:'stern knight of the tide'},
+  duncan:{name:'Duncan',cls:'Ranger',maxHp:28,maxMp:10,atk:9,def:4,mov:5,range:3,palette:{skin:'#c49a77',hair:'#815533',armor:'#5e8f54',trim:'#b7cc7c',cloth:'#3f5b31',accent:'#764735'},weapon:'bow',portrait:'weathered tracker with forest hood'},
+  gwark:{name:'Gwark',cls:'Berserker',maxHp:42,maxMp:4,atk:14,def:4,mov:4,range:1,palette:{skin:'#7ca167',hair:'#3d2b1d',armor:'#935d36',trim:'#c79a54',cloth:'#5b3326',accent:'#8d1e1e'},weapon:'axe',portrait:'broad half-orc with heavy axe'},
+  seren:{name:'Seren Wildleaf',cls:'Warden',maxHp:27,maxMp:18,atk:7,def:4,mov:4,range:2,palette:{skin:'#d9be98',hair:'#4f7c52',armor:'#6ca58a',trim:'#d9ef9f',cloth:'#325443',accent:'#49b778'},weapon:'staff',portrait:'calm guardian with leaf-green hair'},
+  mila:{name:'Mila Corvyn',cls:'Cleric',maxHp:24,maxMp:25,atk:5,def:3,mov:4,range:2,palette:{skin:'#efc6b1',hair:'#9c5d79',armor:'#d8e8f8',trim:'#f6df9b',cloth:'#7e95c9',accent:'#f593c0'},weapon:'mace',portrait:'young healer in pale vestments'},
+  kaelen:{name:'Kaelen',cls:'Scout',maxHp:30,maxMp:8,atk:10,def:4,mov:6,range:1,palette:{skin:'#d0a97e',hair:'#d2d0da',armor:'#6b6f95',trim:'#d8dbe6',cloth:'#3a3f73',accent:'#8955c5'},weapon:'dagger',portrait:'silver-haired rogue from the coast'}
+};
+const spells={
+  smite:{name:'Smite',cost:4,range:1,kind:'attack',power:15,fx:'light'},
+  mend:{name:'Mend',cost:5,range:3,kind:'heal',power:17,fx:'heal'},
+  pin:{name:'Snaring Shot',cost:4,range:3,kind:'attack',power:10,fx:'wind'},
+  thorn:{name:'Thorn Bolt',cost:4,range:3,kind:'attack',power:12,fx:'earth'},
+  bless:{name:'Bless',cost:5,range:3,kind:'heal',power:14,fx:'heal'}
+};
+const heroSpells={alabor:['smite','mend'],duncan:['pin'],gwark:[],seren:['mend','thorn'],mila:['mend','bless'],kaelen:['pin']};
+const locations={
+  naevrdon:{name:'Nævrdön',desc:'A wind-lashed fishing settlement on the Stormbound Coast. Salt spray clings to the piers and rumors cling even tighter to the tavern walls.',scene:'coast'},
+  thornwatch:{name:'Thornwatch',desc:'A small inland village ringed by pines and warding totems, wary of what stirs in the old ruins.',scene:'forest'}
+};
+const npcs={
+  garren:{name:'Garren Stormhollow',text:'The sea threw you ashore for a reason. If the Wreckwood is stirring, then so is the thing beneath the coast.'},
+  althar:{name:'Father Althar',text:'The chapel bells no longer ring, yet each storm I still hear them in my dreams. Bring back whatever holy light remains there.'},
+  hobert:{name:'Hobert Jaikushe',text:'Names, faces, memories… such fragile things. The tide steals them all if you listen closely enough.'},
+  seren:{name:'Seren Wildleaf',text:'The woods are wrong. The roots whisper and the deer will not cross the northern trail. I will guide you.'},
+  mila:{name:'Mila Corvyn',text:'If there is darkness beneath this coast, I refuse to hide in prayer while others bleed. Let me stand with you.'},
+  kaelen:{name:'Kaelen',text:'I know the side paths and the smugglers’ tracks. If you pay me in danger and a little glory, I am in.'}
+};
+const enemies={
+  goblin:{name:'Goblin Raider',hp:17,atk:7,def:2,mov:4,range:1,xp:12,gold:8,palette:{skin:'#6d8b42',hair:'#36251b',armor:'#8b6239',trim:'#c3a368',cloth:'#4c3125'}},
+  wolf:{name:'Feral Wolf',hp:20,atk:8,def:2,mov:5,range:1,xp:12,gold:5,palette:{skin:'#7d7f89',hair:'#3d4046',armor:'#7d7f89',trim:'#cfcfcf',cloth:'#555'}},
+  archer:{name:'Goblin Archer',hp:15,atk:7,def:1,mov:3,range:3,xp:13,gold:9,palette:{skin:'#88a158',hair:'#4d3b2e',armor:'#6e7e41',trim:'#cedc8f',cloth:'#364426'}},
+  shade:{name:'Drowned Shade',hp:24,atk:10,def:3,mov:3,range:1,xp:18,gold:16,palette:{skin:'#8296bc',hair:'#3b4565',armor:'#50627f',trim:'#b0c0e8',cloth:'#374663'}},
+  cultist:{name:'Veiled Acolyte',hp:22,atk:10,def:2,mov:3,range:2,xp:19,gold:18,palette:{skin:'#ad8f87',hair:'#211726',armor:'#6f4b70',trim:'#d3acd9',cloth:'#3e2947'}},
+  warden:{name:'Hollow Warden',hp:36,atk:12,def:5,mov:2,range:1,xp:28,gold:40,palette:{skin:'#b8baa8',hair:'#2b271e',armor:'#7d7f60',trim:'#e1d7aa',cloth:'#54523d'}},
+  boss:{name:'Hobert\'s Shadow',hp:56,atk:14,def:5,mov:4,range:2,xp:60,gold:100,palette:{skin:'#bd9fd1',hair:'#231830',armor:'#6a417d',trim:'#d8a6ff',cloth:'#372149'}}
+};
+const battleDefs=[
+  {name:'The Wreckwood Ambush',terrain:'woods',intro:'On the trail beyond Nævrdön, goblins and beasts descend from the black pines.',reward:45,foes:[['goblin',7,1],['goblin',8,4],['archer',8,2],['wolf',9,6]]},
+  {name:'Whispers at the Old Church',terrain:'ruins',intro:'The ruined sanctuary is full of drowned whispers and violet crystal light.',reward:85,foes:[['shade',7,1],['cultist',8,3],['shade',9,6],['archer',8,6],['goblin',9,1]]},
+  {name:'The Cave of Stolen Names',terrain:'cave',intro:'Deep below the coast, the presence wearing Hobert\'s face waits beside the tide.',reward:160,foes:[['boss',8,3],['cultist',7,1],['cultist',7,6],['warden',9,3],['shade',9,6]]}
+];
+const terrainMaps={
+  woods:[
+    '...t......',
+    '..tt..r...',
+    '.r....t...',
+    '...r......',
+    '..t....t..',
+    '.t.....r..',
+    '.....t....',
+    '....r...t.'
+  ],
+  ruins:[
+    '...s..s...',
+    '..sss.....',
+    '...r...s..',
+    '.....r....',
+    '.s...s....',
+    '....r..s..',
+    '.s.....r..',
+    '...s......'
+  ],
+  cave:[
+    '.w...w....',
+    '..w....c..',
+    '...c......',
+    '...w..w...',
+    '..c....w..',
+    '.....c....',
+    '.w.....c..',
+    '...w......'
+  ]
+};
+
+function fresh(mode='normal'){
+  const units={};
+  for(const [id,h] of Object.entries(heroes)) units[id]={level:1,xp:0,hp:h.maxHp,mp:h.maxMp,weapon:0};
+  return {version:1,mode,location:'naevrdon',chapter:1,gold:110,items:{potion:4,ether:2},party:['alabor','duncan','gwark'],roster:['alabor','duncan','gwark'],units,completed:[],flags:{recruited1:false,recruited2:false,intro:false},playtime:0,started:Date.now()};
+}
+function save(){if(G){try{localStorage.setItem(SAVE_KEY,JSON.stringify(G));}catch(e){toast('Could not save progress.')}}}
+function load(){try{const x=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(x&&x.version===1&&x.party&&x.units)return x;}catch(e){}return null;}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(window._toast);window._toast=setTimeout(()=>t.style.display='none',2400);}
+function play(freq=440,dur=.09,type='square',gain=.04){if(!audio)return;try{const ac=window._ac||(window._ac=new(window.AudioContext||window.webkitAudioContext)());if(ac.state==='suspended')ac.resume();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(freq,ac.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(60,freq*.7),ac.currentTime+dur);g.gain.setValueAtTime(gain,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+dur);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+function setView(v){view=v;render();window.scrollTo({top:0,behavior:'instant'});}
+function showDialog(title,html,buttons=[{label:'Close',act:'close'}]){dialog={title,html,buttons};renderDialog();}
+function renderDialog(){document.querySelectorAll('.dialogbox').forEach(d=>d.remove());if(!dialog)return;const wrap=document.createElement('div');wrap.className='dialogbox';wrap.innerHTML=`<div class="window"><h2>${dialog.title}</h2><div class="notice">${dialog.html}</div><div class="gridbuttons" style="margin-top:10px">${dialog.buttons.map((b,i)=>`<button data-dialog="${i}" class="${b.cls||''}">${b.label}</button>`).join('')}</div></div>`;document.body.appendChild(wrap);}
+function closeDialog(){dialog=null;document.querySelectorAll('.dialogbox').forEach(d=>d.remove());}
+
+function maxHp(id){const u=G.units[id],h=heroes[id];return h.maxHp+(u.level-1)*4+u.weapon*2;}
+function maxMp(id){const u=G.units[id],h=heroes[id];return h.maxMp+(u.level-1)*2;}
+function atk(id){return heroes[id].atk+G.units[id].weapon+Math.floor((G.units[id].level-1)/2);}
+function def(id){return heroes[id].def+Math.floor((G.units[id].level-1)/3)+G.units[id].weapon;}
+function activeRoster(){return G.roster.map(id=>({...heroes[id],id}));}
+function objectiveText(){
+  if(!G.completed.includes(0)) return 'Investigate the Wreckwood road outside Nævrdön.';
+  if(!G.completed.includes(1)) return G.location==='thornwatch' ? 'Enter the old church ruins and recover the light beneath the altar.' : 'Travel to Thornwatch and investigate the ruined church.';
+  if(!G.completed.includes(2)) return 'Descend into the coastal cave and confront the shadow beneath the tide.';
+  return 'Chapter complete. The Stormbound Coast has survived its first trial.';
+}
+function nextBattleIndex(){for(let i=0;i<battleDefs.length;i++) if(!G.completed.includes(i)) return i; return -1;}
+function canTravelTo(dest){if(dest==='thornwatch') return G.completed.includes(0);return true;}
+function recruitStage(){
+  if(G.completed.includes(0) && !G.flags.recruited1){
+    G.flags.recruited1=true;
+    ['seren','kaelen'].forEach(id=>{if(!G.roster.includes(id)) G.roster.push(id); if(!G.party.includes(id)&&G.party.length<6) G.party.push(id);});
+    showDialog('New Allies Join',`<span class="speaker">Seren Wildleaf</span> and <span class="speaker">Kaelen</span> offer their blades to the Children of Chaos. They are now available in your party.`,[{label:'Excellent',act:'close',cls:'green'}]);
+  }
+  if(G.completed.includes(1) && !G.flags.recruited2){
+    G.flags.recruited2=true;
+    if(!G.roster.includes('mila')) G.roster.push('mila'); if(!G.party.includes('mila')&&G.party.length<6) G.party.push('mila');
+    showDialog('A Healer Answers the Call',`<span class="speaker">Mila Corvyn</span> joins your company. Her blessings will help in the trials ahead.`,[{label:'Welcome her',act:'close',cls:'green'}]);
+  }
+  save();
+}
+function header(){return `<header><div><div class="subtitle">Children of Chaos • Chapter One</div><h1>Stormbound Coast</h1><div class="muted">A 16-bit style tactical RPG adaptation of your Nævrdön campaign.</div></div><div class="statsbar"><span class="pill">📍 ${locations[G.location].name}</span><span class="pill">🪙 ${G.gold} Gold</span><span class="pill">⚔ ${G.completed.length}/3 Battles</span><span class="pill">Mode: ${G.mode==='hardcore'?'Iron Soul':'Classic'}</span></div></header>`}
+
+function render(){
+  if(!G && view!=='title') view='title';
+  if(view==='title') return renderTitle();
+  if(view==='town') return renderTown();
+  if(view==='party') return renderParty();
+  if(view==='shop') return renderShop();
+  if(view==='forge') return renderForge();
+  if(view==='inn') return renderInn();
+  if(view==='travel') return renderTravel();
+  if(view==='battle') return renderBattleScreen();
+}
+
+function renderTitle(){
+  const hasSave=!!load();
+  $('#app').innerHTML=`<div class="titlecard"><div class="subtitle">Children of Chaos</div><h1 style="margin-bottom:6px">Stormbound Coast</h1><div class="muted">Genesis-inspired tactical RPG beta remaster</div><canvas id="titleArt" class="titleart" width="320" height="180"></canvas><div class="gridbuttons" style="max-width:520px;margin:12px auto 6px">${hasSave?'<button class="green" data-act="continue">Continue</button>':''}<button class="gold" data-act="newclassic">New Game</button><button class="red" data-act="newhard">Iron Soul</button><button data-act="import">Import Save</button><button data-act="export" ${hasSave?'':'disabled'}>Export Save</button><button data-act="toggleaudio">${audio?'Sound: On':'Sound: Off'}</button></div><input type="file" id="importFile" accept="application/json" style="display:none"><div class="footertext">Built as a mobile PWA. Publish the files to GitHub Pages, then add the site to your iPhone Home Screen.</div></div>`;
+  drawTitleArt();
+}
+function drawTitleArt(){
+  const cv=$('#titleArt'); if(!cv) return; const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  // sky
+  const g=ctx.createLinearGradient(0,0,0,180); g.addColorStop(0,'#2f4e8e'); g.addColorStop(.55,'#20345f'); g.addColorStop(1,'#10162c'); ctx.fillStyle=g; ctx.fillRect(0,0,320,180);
+  // moon & storm
+  ctx.fillStyle='#d5dbff'; ctx.beginPath(); ctx.arc(258,36,18,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#202741'; [[20,30,80],[60,25,100],[180,22,88]].forEach(c=>{ctx.beginPath();ctx.ellipse(c[0],c[1],c[2],14,0,0,Math.PI*2);ctx.fill()});
+  // ocean/land
+  ctx.fillStyle='#15213f'; ctx.fillRect(0,110,320,70); for(let y=110;y<180;y+=4){ctx.fillStyle=y%8===0?'#1d325c':'#132547';ctx.fillRect(0,y,320,2)}
+  ctx.fillStyle='#1f2b20'; ctx.fillRect(0,96,130,20); ctx.fillStyle='#2a2e2f'; ctx.beginPath(); ctx.moveTo(130,116); ctx.lineTo(185,70); ctx.lineTo(230,116); ctx.fill();
+  // town silhouettes
+  ctx.fillStyle='#704f3b'; ctx.fillRect(18,82,18,24); ctx.fillRect(42,88,20,18); ctx.fillRect(68,84,18,22); ctx.fillStyle='#5c382c'; [[18,82,18],[42,88,20],[68,84,18]].forEach(([x,y,w])=>{ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+w/2,y-10);ctx.lineTo(x+w+2,y);ctx.fill()});
+  // three heroes foreground
+  drawPixelHero(ctx,heroes.gwark,70,126,3,0,false); drawPixelHero(ctx,heroes.alabor,128,122,3,0,true); drawPixelHero(ctx,heroes.duncan,182,125,3,0,false);
+  ctx.fillStyle='#fff6c0'; ctx.font='bold 22px Trebuchet MS'; ctx.fillText('CHILDREN OF CHAOS',42,26); ctx.fillStyle='#eedc8f'; ctx.font='bold 18px Trebuchet MS'; ctx.fillText('STORMBOUND COAST',70,48);
+}
+
+function renderTown(){
+  recruitStage();
+  const loc=locations[G.location];
+  const next=nextBattleIndex();
+  $('#app').innerHTML=header()+`<div class="two"><div class="window"><h2>${loc.name}</h2><canvas id="sceneCanvas" width="320" height="160"></canvas><p class="notice" style="margin-top:8px">${loc.desc}</p><div class="choice"><div><b>Current Objective</b><div class="muted">${objectiveText()}</div></div></div><div class="gridbuttons" style="margin-top:10px">${next>=0?`<button class="gold" data-act="startbattle" ${G.location==='naevrdon'&&next===1?'disabled':''}>Begin ${battleDefs[next].name}</button>`:'<button class="green" data-act="ending">View Chapter Ending</button>'}<button data-act="talk">Talk</button><button data-act="travel">Travel</button><button data-act="party">Party / Roster</button><button data-act="shop">Provisioner</button><button data-act="forge">Forge</button><button data-act="inn">Inn</button><button data-act="export">Export Save</button></div></div><div class="window"><h2>Active Party</h2>${G.party.map(id=>renderMember(id)).join('')}<div class="notice">Tip: after the first battle, you can travel to Thornwatch, recruit more allies, and bring up to six party members into battle.</div><div class="gridbuttons"><button data-act="toggleaudio">${audio?'Sound On':'Sound Off'}</button><button data-act="title">Return to Title</button></div></div></div>`;
+  drawTownScene(loc.scene);
+  document.querySelectorAll('.charbadge').forEach(c=>drawBadgeCanvas(c,c.dataset.id));
+}
+function drawTownScene(scene){
+  const cv=$('#sceneCanvas'); if(!cv) return; const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  ctx.clearRect(0,0,320,160);
+  if(scene==='coast'){
+    const grad=ctx.createLinearGradient(0,0,0,160); grad.addColorStop(0,'#577ecc'); grad.addColorStop(.65,'#94b0dc'); grad.addColorStop(.651,'#35614e'); grad.addColorStop(1,'#29402c'); ctx.fillStyle=grad; ctx.fillRect(0,0,320,160);
+    ctx.fillStyle='#41526f'; ctx.fillRect(0,54,320,18);
+    drawCloud(ctx,45,26); drawCloud(ctx,240,22); drawCloud(ctx,180,38);
+    // ocean
+    ctx.fillStyle='#2c5a8a'; ctx.fillRect(0,72,320,88); for(let y=72;y<160;y+=4){ctx.fillStyle=y%8===0?'#336795':'#28547f';ctx.fillRect(0,y,320,2)}
+    // docks/houses
+    drawHouse(ctx,34,58,'#8b623f','#cfb37a'); drawHouse(ctx,74,64,'#7a5740','#c98a56'); drawHouse(ctx,114,60,'#6d7d8f','#e1c97c');
+    ctx.fillStyle='#5e4331'; ctx.fillRect(196,88,78,8); for(let i=0;i<5;i++) ctx.fillRect(200+i*18,96,4,18);
+    ctx.fillStyle='#3d4a54'; ctx.beginPath(); ctx.moveTo(272,56); ctx.lineTo(310,18); ctx.lineTo(320,56); ctx.fill();
+  }else{
+    const grad=ctx.createLinearGradient(0,0,0,160); grad.addColorStop(0,'#7694cf'); grad.addColorStop(.55,'#aac4e0'); grad.addColorStop(.56,'#486947'); grad.addColorStop(1,'#2f4b2d'); ctx.fillStyle=grad; ctx.fillRect(0,0,320,160);
+    drawCloud(ctx,55,25); drawCloud(ctx,236,30);
+    for(let i=0;i<10;i++) drawTree(ctx,12+i*30,76+rnd(8));
+    drawHouse(ctx,62,72,'#6c5541','#d7be89'); drawHouse(ctx,132,78,'#846345','#c58a56'); drawHouse(ctx,208,70,'#5d6f52','#b9d097');
+    ctx.fillStyle='#846d49'; ctx.fillRect(0,122,320,18); ctx.fillStyle='#6e5939'; for(let x=0;x<320;x+=18) ctx.fillRect(x,128,10,4);
+  }
+}
+function drawCloud(ctx,x,y){ctx.fillStyle='#dce7ff'; [[0,0,14],[12,-6,16],[26,0,14],[16,4,20]].forEach(([dx,dy,r])=>{ctx.beginPath();ctx.arc(x+dx,y+dy,r,0,Math.PI*2);ctx.fill();});}
+function drawHouse(ctx,x,y,wall,roof){ctx.fillStyle=wall; ctx.fillRect(x,y,28,24); ctx.fillStyle=roof; ctx.beginPath(); ctx.moveTo(x-2,y); ctx.lineTo(x+14,y-12); ctx.lineTo(x+30,y); ctx.fill(); ctx.fillStyle='#352015'; ctx.fillRect(x+10,y+12,7,12); ctx.fillStyle='#f3d48b'; ctx.fillRect(x+4,y+8,5,5); ctx.fillRect(x+20,y+8,5,5);}
+function drawTree(ctx,x,y){ctx.fillStyle='#5a391f'; ctx.fillRect(x+5,y+18,6,14); ctx.fillStyle='#2e6236'; ctx.fillRect(x-2,y+10,20,10); ctx.fillRect(x+1,y+4,14,10);}
+
+function renderMember(id){
+  const h=heroes[id],u=G.units[id];
+  return `<div class="member"><canvas class="charbadge" data-id="${id}" width="58" height="58"></canvas><div><b>${h.name}</b> <span class="muted">${h.cls}</span><div>LV ${u.level} • WPN +${u.weapon}</div><div class="meter"><i style="width:${100*u.hp/maxHp(id)}%"></i></div><div class="meter mp"><i style="width:${100*u.mp/maxMp(id)}%"></i></div><div class="xp"><i style="width:${100*u.xp/(25+(u.level-1)*15)}%"></i></div></div><div><div>HP ${u.hp}/${maxHp(id)}</div><div>MP ${u.mp}/${maxMp(id)}</div><div>ATK ${atk(id)} DEF ${def(id)}</div></div></div>`;
+}
+function renderParty(){
+  const reserve=G.roster.filter(id=>!G.party.includes(id));
+  $('#app').innerHTML=header()+`<div class="two"><div class="window"><h2>Battle Party</h2><div class="notice">Choose up to six active party members. Drag-free swap controls are used for mobile simplicity.</div>${G.party.map((id,i)=>`<div class="choice"><div><b>${heroes[id].name}</b> <span class="muted">${heroes[id].cls}</span></div><div class="row">${i>0?`<button class="smallbtn" data-act="partyup:${i}">↑</button>`:''}${i<G.party.length-1?`<button class="smallbtn" data-act="partydown:${i}">↓</button>`:''}<button class="smallbtn red" data-act="remove:${id}" ${G.party.length<=3?'disabled':''}>Remove</button></div></div>`).join('')}<div class="gridbuttons" style="margin-top:10px"><button data-act="town">Back to Town</button></div></div><div class="window"><h2>Roster</h2>${activeRoster().map(m=>renderMember(m.id)).join('')}${reserve.length?`<h3>Reserve</h3>${reserve.map(id=>`<div class="choice"><div><b>${heroes[id].name}</b> <span class="muted">${heroes[id].cls}</span></div><button class="smallbtn green" data-act="add:${id}" ${G.party.length>=6?'disabled':''}>Add to Party</button></div>`).join('')}`:'<div class="notice">No reserve members.</div>'}</div></div>`;
+  document.querySelectorAll('.charbadge').forEach(c=>drawBadgeCanvas(c,c.dataset.id));
+}
+function renderShop(){
+  $('#app').innerHTML=header()+`<div class="window"><h2>Provisioner</h2><p class="notice">A cluttered counter of salves, arrows, dried rations, and expedition gear. Supplies are expensive this close to the storms.</p><div class="choice"><div><b>Healing Potion</b><div class="muted">Restore 22 HP in battle</div></div><div><button class="smallbtn gold" data-act="buy:potion:22">Buy 22g</button> <span class="pill">Owned ${G.items.potion||0}</span></div></div><div class="choice"><div><b>Ether</b><div class="muted">Restore 12 MP in battle</div></div><div><button class="smallbtn gold" data-act="buy:ether:28">Buy 28g</button> <span class="pill">Owned ${G.items.ether||0}</span></div></div><div class="gridbuttons" style="margin-top:10px"><button data-act="town">Back to Town</button></div></div>`;
+}
+function renderForge(){
+  $('#app').innerHTML=header()+`<div class="window"><h2>Forge & Arms</h2><p class="notice">Upgrade a hero's weapon for 60 gold. Each tier slightly improves attack, defense, and maximum health.</p>${G.roster.map(id=>`<div class="choice"><div><b>${heroes[id].name}</b> <span class="muted">${heroes[id].cls}</span><div>Current Weapon Tier: +${G.units[id].weapon}</div></div><button class="smallbtn gold" data-act="upgrade:${id}" ${G.gold<60?'disabled':''}>Upgrade (60g)</button></div>`).join('')}<div class="gridbuttons" style="margin-top:10px"><button data-act="town">Back to Town</button></div></div>`;
+}
+function renderInn(){
+  $('#app').innerHTML=header()+`<div class="window"><h2>The Inn</h2><p class="notice">A warm fire, sturdy stew, and a soft bed compared to the road. Resting costs 18 gold and fully restores the party.</p><div class="gridbuttons"><button class="green" data-act="rest" ${G.gold<18?'disabled':''}>Rest Party (18g)</button><button data-act="town">Back to Town</button></div></div>`;
+}
+function renderTravel(){
+  $('#app').innerHTML=header()+`<div class="window"><h2>Travel</h2><p class="notice">The Stormbound Coast is still narrow in this chapter, but the roads are not equally safe.</p>${Object.entries(locations).map(([id,loc])=>`<div class="choice"><div><b>${loc.name}</b><div class="muted">${loc.desc}</div></div><button class="smallbtn ${G.location===id?'green':'gold'}" data-act="goto:${id}" ${G.location===id||!canTravelTo(id)?'disabled':''}>${G.location===id?'Current Location':canTravelTo(id)?'Travel Here':'Unavailable'}</button></div>`).join('')}<div class="gridbuttons" style="margin-top:10px"><button data-act="town">Back to Town</button></div></div>`;
+}
+
+function startBattle(idx){
+  const defn=battleDefs[idx];
+  B={idx,turn:1,terrain:defn.terrain,terrainMap:terrainMaps[defn.terrain],mode:'select',selected:null,spell:null,item:null,used:new Set(),moved:new Set(),log:[defn.intro],fx:[]};
+  const startPos=[[1,1],[1,3],[1,5],[0,2],[0,4],[0,6]];
+  B.allies=G.party.map((id,i)=>({id,x:startPos[i][0],y:startPos[i][1]}));
+  B.foes=defn.foes.map(([type,x,y])=>({type,x,y,hp:enemies[type].hp}));
+  setView('battle');
+  showDialog(defn.name,defn.intro,[{label:'To battle!',act:'close',cls:'red'}]);
+}
+function renderBattleScreen(){
+  if(!B) return setView('town');
+  const sel=B.allies.find(a=>a.id===B.selected), targetInfo=sel?`${heroes[sel.id].name} • HP ${G.units[sel.id].hp}/${maxHp(sel.id)} • MP ${G.units[sel.id].mp}/${maxMp(sel.id)}`:'Tap a ready ally to begin';
+  $('#app').innerHTML=header()+`<div class="two"><div class="window"><h2>${battleDefs[B.idx].name}</h2><canvas id="battleCanvas" width="320" height="256" aria-label="battlefield"></canvas><div class="muted" style="margin-top:6px">${battleHint()}</div><div class="toolbar" style="margin-top:8px"><button data-bact="attack">Attack</button><button data-bact="magic">Magic</button><button data-bact="item">Item</button><button data-bact="wait">Wait</button></div>${B.mode==='chooseSpell'&&sel?`<div class="gridbuttons" style="margin-top:8px">${(heroSpells[sel.id]||[]).map(id=>`<button data-bact="spell:${id}">${spells[id].name} (${spells[id].cost} MP)</button>`).join('')||'<div class="notice">No spells known.</div>'}</div>`:''}${B.mode==='chooseItem'?`<div class="gridbuttons" style="margin-top:8px"><button data-bact="use:potion">Potion × ${G.items.potion||0}</button><button data-bact="use:ether">Ether × ${G.items.ether||0}</button></div>`:''}<div class="gridbuttons" style="margin-top:8px"><button class="ghost" data-bact="cancel">Cancel</button><button class="gold" data-bact="endphase">End Phase</button><button class="red" data-bact="retreat">Retreat (-25g)</button></div></div><div class="window"><h2>Battle Status</h2><canvas id="portraitCanvas" width="96" height="96"></canvas><div class="notice" style="margin-top:8px"><b>${sel?heroes[sel.id].name:'No unit selected'}</b><br>${sel?heroes[sel.id].portrait:'Select a hero to view their portrait.'}</div><div class="choice"><div><b>Selected Unit</b><div class="muted">${targetInfo}</div></div></div><div class="choice"><div><b>Objective</b><div class="muted">Defeat all enemies.</div></div><span class="pill">Turn ${B.turn}</span></div><div class="log">${B.log.slice(-7).reverse().map(t=>`<div>• ${t}</div>`).join('')}</div><div class="window" style="margin-top:10px;padding:8px"><h3>Party</h3>${G.party.map(id=>renderBattleMember(id)).join('')}</div></div></div>`;
+  drawBattle();
+  drawPortraitCanvas();
+  document.querySelectorAll('.charbadge').forEach(c=>drawBadgeCanvas(c,c.dataset.id));
+}
+function renderBattleMember(id){const u=G.units[id];return `<div class="member" style="grid-template-columns:58px 1fr auto"><canvas class="charbadge" data-id="${id}" width="58" height="58"></canvas><div><b>${heroes[id].name}</b><div>LV ${u.level}</div><div class="meter"><i style="width:${100*u.hp/maxHp(id)}%"></i></div><div class="meter mp"><i style="width:${100*u.mp/maxMp(id)}%"></i></div></div><div>${B.used.has(id)?'<span class="pill">Done</span>':'<span class="pill">Ready</span>'}</div></div>`;}
+function battleHint(){
+  if(B.mode==='select') return 'Tap a glowing ally, then tap a blue tile to move or choose an action.';
+  if(B.mode==='attack') return 'Tap an enemy highlighted in red within weapon range.';
+  if(B.mode==='spell') return 'Tap a valid target in yellow for your selected spell.';
+  if(B.mode==='item') return 'Tap an adjacent ally to use the selected item.';
+  if(B.mode==='chooseSpell') return 'Choose a spell.';
+  if(B.mode==='chooseItem') return 'Choose an item.';
+  return 'Issue commands to your party.';
+}
+
+function drawBadgeCanvas(cv,id){const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,cv.width,cv.height);ctx.fillStyle='#13203c';ctx.fillRect(0,0,58,58);ctx.fillStyle='#223057';ctx.fillRect(2,2,54,54);drawPixelHero(ctx,heroes[id],13,8,2,0,true,true);}
+function drawPortraitCanvas(){const cv=$('#portraitCanvas'); if(!cv) return; const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false; ctx.fillStyle='#11182b'; ctx.fillRect(0,0,96,96); ctx.fillStyle='#26355f'; ctx.fillRect(4,4,88,88); const sel=B&&B.selected?B.selected:'alabor'; drawPortrait(ctx,heroes[sel],12,8,4);}
+
+function px(ctx,x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(x,y,w,h)}
+function drawPortrait(ctx,h,x,y,s){const p=h.palette;px(ctx,x,y,18*s,18*s,p.hair);px(ctx,x+2*s,y+4*s,14*s,12*s,p.skin);px(ctx,x+1*s,y+15*s,16*s,3*s,p.armor);px(ctx,x+3*s,y+6*s,2*s,2*s,'#111');px(ctx,x+13*s,y+6*s,2*s,2*s,'#111');px(ctx,x+6*s,y+11*s,6*s,1*s,'#7c4b39');px(ctx,x-1*s,y+16*s,20*s,10*s,p.cloth);px(ctx,x+4*s,y+18*s,10*s,8*s,p.armor);px(ctx,x+7*s,y+1*s,4*s,3*s,p.trim);}
+function drawPixelHero(ctx,h,x,y,s,frame=0,highlight=false,badge=false){const p=h.palette; const bob=frame?1:0; if(highlight){px(ctx,x-4,y+26*s,26*s,4,'#0006')} px(ctx,x+7*s,y+4*s+bob,10*s,4*s,p.hair); px(ctx,x+8*s,y+8*s+bob,8*s,6*s,p.skin); px(ctx,x+7*s,y+14*s+bob,10*s,2*s,p.trim); px(ctx,x+5*s,y+16*s+bob,14*s,9*s,p.armor); px(ctx,x+4*s,y+17*s+bob,2*s,6*s,p.cloth); px(ctx,x+18*s,y+17*s+bob,2*s,6*s,p.cloth); px(ctx,x+7*s,y+25*s+bob,4*s,7*s,p.cloth); px(ctx,x+13*s,y+25*s+bob,4*s,7*s,p.cloth); px(ctx,x+7*s,y+32*s+bob,4*s,3*s,'#2b1e16'); px(ctx,x+13*s,y+32*s+bob,4*s,3*s,'#2b1e16'); px(ctx,x+9*s,y+10*s+bob,1*s,1*s,'#111'); px(ctx,x+14*s,y+10*s+bob,1*s,1*s,'#111'); if(h.weapon==='sword'){px(ctx,x+19*s,y+18*s+bob,2*s,10*s,'#dce4ff');px(ctx,x+18*s,y+18*s+bob,4*s,2*s,p.trim);} if(h.weapon==='bow'){px(ctx,x+18*s,y+16*s+bob,2*s,12*s,'#7b5534'); px(ctx,x+20*s,y+16*s+bob,1*s,12*s,'#eee');} if(h.weapon==='axe'){px(ctx,x+18*s,y+16*s+bob,2*s,12*s,'#7b5534'); px(ctx,x+18*s,y+15*s+bob,6*s,5*s,'#d3d1cb');} if(h.weapon==='staff'){px(ctx,x+19*s,y+16*s+bob,2*s,12*s,'#8b6c48');px(ctx,x+17*s,y+13*s+bob,6*s,4*s,p.accent);} if(h.weapon==='mace'){px(ctx,x+19*s,y+16*s+bob,2*s,12*s,'#8b6c48');px(ctx,x+17*s,y+14*s+bob,6*s,6*s,'#e2e8ef');} if(h.weapon==='dagger'){px(ctx,x+18*s,y+18*s+bob,2*s,8*s,'#dce4ff');px(ctx,x+18*s,y+18*s+bob,4*s,2*s,p.trim);} if(!badge){px(ctx,x+3*s,y+16*s+bob,2*s,7*s,p.accent);} }
+function drawEnemySprite(ctx,e,x,y,s,frame=0){const p=e.palette;px(ctx,x+7*s,y+4*s,10*s,4*s,p.hair);px(ctx,x+8*s,y+8*s,8*s,6*s,p.skin);px(ctx,x+5*s,y+16*s,14*s,9*s,p.armor);px(ctx,x+7*s,y+25*s,4*s,7*s,p.cloth);px(ctx,x+13*s,y+25*s,4*s,7*s,p.cloth);px(ctx,x+4*s,y+17*s,2*s,6*s,p.cloth);px(ctx,x+18*s,y+17*s,2*s,6*s,p.cloth);px(ctx,x+9*s,y+10*s,1*s,1*s,'#111');px(ctx,x+14*s,y+10*s,1*s,1*s,'#111');}
+
+function drawBattle(){
+  const cv=$('#battleCanvas'); if(!cv||!B) return; const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false; const tile=32;
+  ctx.clearRect(0,0,320,240);
+  drawBattlefield(ctx,tile);
+  // overlays
+  const sel=B.allies.find(a=>a.id===B.selected);
+  if(sel&&B.mode==='select'){for(let y=0;y<8;y++)for(let x=0;x<10;x++) if(!occupied(x,y)&&reach(sel,x,y)){px(ctx,x*tile,y*tile,tile,tile,'rgba(88,180,255,.35)');}
+  }
+  if(sel&&['attack','spell','item'].includes(B.mode)){
+    const range=B.mode==='attack'?heroes[sel.id].range:(B.mode==='item'?1:spells[B.spell].range);
+    for(let y=0;y<8;y++)for(let x=0;x<10;x++) if(dist(sel,{x,y})<=range) px(ctx,x*tile,y*tile,tile,tile,'rgba(255,214,102,.30)');
+  }
+  // effects under units
+  for(const fx of B.fx){px(ctx,fx.x*tile+8,fx.y*tile+8,16,16,fx.color);} B.fx=[];
+  // draw units
+  B.foes.forEach((f,i)=>{ if(f.hp<=0) return; drawShadow(ctx,f.x*tile+16,f.y*tile+28); drawEnemySprite(ctx,enemies[f.type],f.x*tile+3,f.y*tile-2,1); drawHpBar(ctx,f.x*tile+4,f.y*tile+2,24,4,f.hp/enemies[f.type].hp,'#d86b81'); });
+  B.allies.forEach((a,i)=>{ if(G.units[a.id].hp<=0) return; drawShadow(ctx,a.x*tile+16,a.y*tile+28); drawPixelHero(ctx,heroes[a.id],a.x*tile+3,a.y*tile-2,1,(B.turn+i)%2,!!(sel&&sel.id===a.id)); drawHpBar(ctx,a.x*tile+4,a.y*tile+2,24,4,G.units[a.id].hp/maxHp(a.id),'#74d7a7'); if(!B.used.has(a.id)){ctx.strokeStyle=sel&&sel.id===a.id?'#ffef9a':'#8dd0ff';ctx.lineWidth=2;ctx.strokeRect(a.x*tile+1,a.y*tile+1,30,30);} });
+  if(sel){ctx.strokeStyle='#fff3b0';ctx.lineWidth=2;ctx.strokeRect(sel.x*tile+.5,sel.y*tile+.5,31,31);}
+  // grid
+  ctx.strokeStyle='rgba(0,0,0,.22)'; ctx.lineWidth=1; for(let x=0;x<=10;x++){ctx.beginPath();ctx.moveTo(x*tile+.5,0);ctx.lineTo(x*tile+.5,256);ctx.stroke();} for(let y=0;y<=8;y++){ctx.beginPath();ctx.moveTo(0,y*tile+.5);ctx.lineTo(320,y*tile+.5);ctx.stroke();}
+}
+function drawBattlefield(ctx,t){const map=terrainMaps[B.terrain]; for(let y=0;y<8;y++){for(let x=0;x<10;x++){const c=map[y][x]; if(B.terrain==='woods') drawGrass(ctx,x*t,y*t,t, c==='r'); else if(B.terrain==='ruins') drawStone(ctx,x*t,y*t,t,c==='s'||c==='r'); else drawCave(ctx,x*t,y*t,t,c); } } }
+function drawGrass(ctx,x,y,t,feature){px(ctx,x,y,t,t,'#587f53'); px(ctx,x,y+t-8,t,8,'#496847'); for(let i=0;i<4;i++) px(ctx,x+rnd(t-4),y+rnd(t-4),2,2, i%2?'#6e965d':'#769e67'); if(feature){drawTreeTile(ctx,x,y,t);} }
+function drawTreeTile(ctx,x,y,t){px(ctx,x+13,y+16,6,12,'#6a4c2b'); px(ctx,x+8,y+6,16,10,'#2e6b39'); px(ctx,x+10,y+2,12,8,'#3c7e45');}
+function drawStone(ctx,x,y,t,feature){px(ctx,x,y,t,t,'#76778b'); px(ctx,x,y+t-8,t,8,'#656777'); for(let i=0;i<5;i++) px(ctx,x+rnd(t-6),y+rnd(t-6),4,2,'#8d8ea0'); if(feature){px(ctx,x+8,y+10,16,10,'#9d9eaf'); px(ctx,x+10,y+8,12,4,'#b7b8c8');}}
+function drawCave(ctx,x,y,t,code){px(ctx,x,y,t,t,'#565161'); px(ctx,x,y+t-8,t,8,'#484452'); for(let i=0;i<4;i++) px(ctx,x+rnd(t-4),y+rnd(t-4),3,3,'#6b6774'); if(code==='w'){px(ctx,x,y+20,t,12,'#395e8f'); for(let i=0;i<5;i++) px(ctx,x+i*6,y+24,3,2,'#72a7d1');} if(code==='c'){px(ctx,x+11,y+8,10,12,'#8f4db2'); px(ctx,x+14,y+5,4,4,'#c792ff');}}
+function drawShadow(ctx,x,y){ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(x,y,10,4,0,0,Math.PI*2); ctx.fill();}
+function drawHpBar(ctx,x,y,w,h,p,color){px(ctx,x,y,w,h,'#2a1320'); px(ctx,x+1,y+1,Math.max(0,Math.floor((w-2)*p)),h-2,color)}
+
+function occupied(x,y){return allyAt(x,y)||enemyAt(x,y)}
+function allyAt(x,y){return B.allies.find(a=>a.x===x&&a.y===y&&G.units[a.id].hp>0)}
+function enemyAt(x,y){return B.foes.find(f=>f.x===x&&f.y===y&&f.hp>0)}
+function dist(a,b){return Math.abs(a.x-b.x)+Math.abs(a.y-b.y)}
+function reach(unit,x,y){return dist(unit,{x,y})<=heroes[unit.id].mov&&!blockedTile(x,y)}
+function blockedTile(x,y){if(x<0||y<0||x>=10||y>=8) return true; const c=terrainMaps[B.terrain][y][x]; return c==='t'||(B.terrain==='ruins'&&c==='s');}
+function readyAllies(){return B.allies.filter(a=>G.units[a.id].hp>0&&!B.used.has(a.id));}
+
+function battleTap(x,y){
+  const sel=B.allies.find(a=>a.id===B.selected), ally=allyAt(x,y), foe=enemyAt(x,y);
+  if(B.mode==='attack'&&sel&&foe&&dist(sel,foe)<=heroes[sel.id].range){doAttack(sel,foe,atk(sel.id)); finishAct(); return;}
+  if(B.mode==='spell'&&sel&&B.spell){const sp=spells[B.spell]; if(sp.kind==='attack'&&foe&&dist(sel,foe)<=sp.range&&G.units[sel.id].mp>=sp.cost){G.units[sel.id].mp-=sp.cost; doAttack(sel,foe,sp.power,true,sp.fx); finishAct(); return;} if(sp.kind==='heal'&&ally&&dist(sel,ally)<=sp.range&&G.units[sel.id].mp>=sp.cost){G.units[sel.id].mp-=sp.cost; G.units[ally.id].hp=Math.min(maxHp(ally.id),G.units[ally.id].hp+sp.power); B.log.push(`${heroes[sel.id].name} restored ${heroes[ally.id].name} for ${sp.power} HP.`); B.fx.push({x:ally.x,y:ally.y,color:'rgba(123,255,193,.55)'}); play(840,.18,'sine'); finishAct(); return;}}
+  if(B.mode==='item'&&sel&&ally&&dist(sel,ally)<=1&&B.item){ if(!G.items[B.item]) return toast('No supplies left.'); G.items[B.item]--; if(B.item==='potion') G.units[ally.id].hp=Math.min(maxHp(ally.id),G.units[ally.id].hp+22); else G.units[ally.id].mp=Math.min(maxMp(ally.id),G.units[ally.id].mp+12); B.log.push(`${heroes[sel.id].name} used ${B.item} on ${heroes[ally.id].name}.`); B.fx.push({x:ally.x,y:ally.y,color:B.item==='potion'?'rgba(255,112,136,.45)':'rgba(122,196,255,.45)'}); play(760,.17,'triangle'); finishAct(); return; }
+  if(B.mode==='select'){
+    if(ally&&G.units[ally.id].hp>0&&!B.used.has(ally.id)){ B.selected=ally.id; renderBattleScreen(); play(540,.05); return; }
+    if(sel && !occupied(x,y) && !blockedTile(x,y) && reach(sel,x,y)){ sel.x=x; sel.y=y; B.moved.add(sel.id); renderBattleScreen(); play(300,.05); return; }
+  }
+  if(foe) toast(`${enemies[foe.type].name} • HP ${foe.hp}`); else if(ally) toast(`${heroes[ally.id].name} • HP ${G.units[ally.id].hp}`);
+}
+function doAttack(sel,foe,power,magic=false,fx=''){const e=enemies[foe.type]; const dmg=Math.max(2,power-e.def+rnd(5)-1); foe.hp=Math.max(0,foe.hp-dmg); B.log.push(`${heroes[sel.id].name} dealt ${dmg} ${magic?'magic ':' '}damage to ${e.name}.`); B.fx.push({x:foe.x,y:foe.y,color:magic?'rgba(255,225,142,.5)':'rgba(255,110,110,.45)'}); play(magic?760:180,.12,magic?'sine':'square'); if(foe.hp<=0){ gainXp(sel.id,e.xp); G.gold+=e.gold; B.log.push(`${e.name} falls. +${e.xp} XP, +${e.gold} gold.`); play(980,.16,'square'); }}
+function gainXp(id,xp){const u=G.units[id]; u.xp+=xp; let need=25+(u.level-1)*15; while(u.xp>=need){u.xp-=need; u.level++; u.hp=maxHp(id); u.mp=maxMp(id); B.log.push(`✦ ${heroes[id].name} reached level ${u.level}!`); need=25+(u.level-1)*15; }}
+function finishAct(){B.used.add(B.selected); B.selected=null; B.mode='select'; checkOutcome(); if(B&&readyAllies().length===0) enemyPhase(); else if(B) renderBattleScreen(); save();}
+function checkOutcome(){if(!B) return; if(B.foes.every(f=>f.hp<=0)){const idx=B.idx; G.completed.push(idx); G.gold+=battleDefs[idx].reward; for(const id of G.party){if(G.units[id].hp>0) gainXp(id,12); G.units[id].mp=Math.min(maxMp(id),G.units[id].mp+3);} B=null; save(); setView('town'); const extra=idx===0?'With the road clear, new allies step forward and Thornwatch opens to you.':idx===1?'The altar shard reveals a path into the caves below the coast.':'The false Hobert dissolves into salt mist. For now, the coast is safe.'; showDialog('Victory!',`You won <span class="speaker">${battleDefs[idx].name}</span> and recovered <span class="speaker">${battleDefs[idx].reward} bonus gold</span>. ${extra}`,[{label:idx===2?'See ending':'Continue',act:idx===2?'ending':'close',cls:'green'}]);}}
+function enemyPhase(){if(!B) return; B.turn++; B.used.clear(); B.moved.clear(); B.selected=null; B.mode='select'; B.log.push('— Enemy phase —');
+  for(const foe of B.foes.filter(f=>f.hp>0)){
+    let targets=B.allies.filter(a=>G.units[a.id].hp>0); if(!targets.length) break; targets.sort((a,b)=>dist(foe,a)-dist(foe,b)); let target=targets[0],stat=enemies[foe.type];
+    while(dist(foe,target)>stat.range){ let opts=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:foe.x+dx,y:foe.y+dy})).filter(p=>!blockedTile(p.x,p.y)&&!occupied(p.x,p.y)); if(!opts.length) break; opts.sort((a,b)=>dist(a,target)-dist(b,target)); if(dist(opts[0],target)<dist(foe,target)){foe.x=opts[0].x; foe.y=opts[0].y;} else break; if(dist(foe,target)<=stat.range) break; }
+    targets=B.allies.filter(a=>G.units[a.id].hp>0).sort((a,b)=>dist(foe,a)-dist(foe,b)); target=targets[0]; if(target && dist(foe,target)<=stat.range){const dmg=Math.max(1,stat.atk-def(target.id)+rnd(4)-1); G.units[target.id].hp=Math.max(0,G.units[target.id].hp-dmg); B.log.push(`${stat.name} hits ${heroes[target.id].name} for ${dmg}.`); play(140,.08); if(G.units[target.id].hp<=0) B.log.push(`☠ ${heroes[target.id].name} has fallen!`);} }
+  if(B.allies.every(a=>G.units[a.id].hp<=0)){
+    const hardcore=G.mode==='hardcore'; B=null;
+    if(hardcore){localStorage.removeItem(SAVE_KEY); G=null; view='title'; render(); showDialog('Your Company Has Fallen','In <span class="speaker">Iron Soul</span> mode, defeat ends the campaign permanently.',[{label:'Return to Title',act:'close'}]); return;}
+    G.gold=Math.max(0,G.gold-45); for(const id of G.party){G.units[id].hp=Math.max(1,Math.floor(maxHp(id)*.45)); G.units[id].mp=Math.max(0,Math.floor(maxMp(id)*.35));} G.location='naevrdon'; save(); setView('town'); showDialog('Defeat','Fisherfolk and wardens haul the battered party back to safety. You lose 45 gold in supplies and recovery.',[{label:'Regroup',act:'close'}]); return;
+  }
+  renderBattleScreen(); save();
+}
+
+function talkMenu(){
+  const list=[];
+  if(G.location==='naevrdon') list.push('garren','althar','hobert'); else list.push('seren','mila','kaelen');
+  showDialog('Talk to Whom?', list.map(id=>`<div class="choice"><div><b>${npcs[id].name}</b></div><button data-inline="talk:${id}">Speak</button></div>`).join('')+`<div class="gridbuttons" style="margin-top:8px"><button data-inline="close">Done</button></div>`,[]);
+  // custom inline buttons handled globally
+}
+function showEnding(){showDialog('Chapter One Complete',`With the thing beneath the coast driven back, Nævrdön breathes again. The church bells of the old sanctuary ring once in the dawn. Yet Father Althar warns that this was only a ripple from a greater storm. Alabor, Duncan, and Gwark stand at the head of a larger fellowship now — a true beginning for the <span class="speaker">Children of Chaos</span>.`,[{label:'Back to Town',act:'close',cls:'green'}]);}
+
+function act(action){
+  if(action==='continue'){G=load(); audio=G?G.volume!==false:audio; save(); setView('town'); if(!G.flags.intro){G.flags.intro=true; showDialog('A Coast in Turmoil',`A storm shatters the night over <span class="speaker">Nævrdön</span>. In its wake, Alabor, Duncan, and Gwark find the coast bristling with omens, raiders, and a darkness that knows their names.`,[{label:'Begin',act:'close',cls:'green'}]); save();} return;}
+  if(action==='newclassic'||action==='newhard'){G=fresh(action==='newhard'?'hardcore':'normal'); G.flags.intro=true; audio=true; save(); setView('town'); showDialog('The Fellowship Gathers',`<span class="speaker">Alabor</span>, <span class="speaker">Duncan</span>, and <span class="speaker">Gwark</span> arrive in storm-lashed Nævrdön as rumors spread of creatures in the Wreckwood and bells ringing in a ruined church.`,[{label:'Set out',act:'close',cls:'green'}]); return;}
+  if(action==='title'){view='title'; render(); return;}
+  if(action==='toggleaudio'){audio=!audio; if(G){G.volume=audio; save();} render(); return;}
+  if(action==='export'){if(!G) return; const blob=new Blob([JSON.stringify(G,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='children-of-chaos-save.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500); return;}
+  if(action==='import'){$('#importFile')?.click(); return;}
+  if(action==='town'){setView('town'); return;}
+  if(action==='party'){setView('party'); return;}
+  if(action==='shop'){setView('shop'); return;}
+  if(action==='forge'){setView('forge'); return;}
+  if(action==='inn'){setView('inn'); return;}
+  if(action==='travel'){setView('travel'); return;}
+  if(action==='talk'){talkMenu(); return;}
+  if(action==='startbattle'){const idx=nextBattleIndex(); if(idx<0) return showEnding(); if(idx===1 && G.location!=='thornwatch') return toast('Travel to Thornwatch first.'); if(idx===2 && G.location!=='naevrdon') return toast('Return to Nævrdön to access the sea cave.'); startBattle(idx); return;}
+  if(action==='ending'){showEnding(); return;}
+  if(action.startsWith('goto:')){const id=action.split(':')[1]; if(canTravelTo(id)){G.location=id; save(); setView('town'); play(500,.08);} return;}
+  if(action.startsWith('buy:')){const [,item,cost]=action.split(':'); const n=+cost; if(G.gold<n) return toast('Not enough gold.'); G.gold-=n; G.items[item]=(G.items[item]||0)+1; save(); render(); play(620,.06); return;}
+  if(action==='rest'){if(G.gold<18) return toast('Not enough gold.'); G.gold-=18; for(const id of G.roster){G.units[id].hp=maxHp(id); G.units[id].mp=maxMp(id);} save(); setView('town'); toast('The party feels refreshed.'); play(700,.09,'triangle'); return;}
+  if(action.startsWith('upgrade:')){const id=action.split(':')[1]; if(G.gold<60) return toast('Not enough gold.'); G.gold-=60; G.units[id].weapon++; save(); render(); play(300,.08,'sawtooth'); return;}
+  if(action.startsWith('add:')){const id=action.split(':')[1]; if(G.party.length>=6) return toast('Party is full.'); if(!G.party.includes(id)) G.party.push(id); save(); render(); return;}
+  if(action.startsWith('remove:')){const id=action.split(':')[1]; if(G.party.length<=3) return toast('Keep at least three members.'); G.party=G.party.filter(x=>x!==id); save(); render(); return;}
+  if(action.startsWith('partyup:')){const i=+action.split(':')[1]; [G.party[i-1],G.party[i]]=[G.party[i],G.party[i-1]]; save(); render(); return;}
+  if(action.startsWith('partydown:')){const i=+action.split(':')[1]; [G.party[i],G.party[i+1]]=[G.party[i+1],G.party[i]]; save(); render(); return;}
+}
+function battleAct(action){ if(!B) return;
+  const sel=B.allies.find(a=>a.id===B.selected);
+  if(action==='attack'){ if(!sel||B.used.has(sel.id)) return toast('Select a ready hero.'); B.mode='attack'; renderBattleScreen(); return; }
+  if(action==='magic'){ if(!sel||B.used.has(sel.id)) return toast('Select a ready hero.'); if(!(heroSpells[sel.id]||[]).length) return toast('No spells known.'); B.mode='chooseSpell'; renderBattleScreen(); return; }
+  if(action==='item'){ if(!sel||B.used.has(sel.id)) return toast('Select a ready hero.'); B.mode='chooseItem'; renderBattleScreen(); return; }
+  if(action==='wait'){ if(!sel||B.used.has(sel.id)) return toast('Select a ready hero.'); B.used.add(sel.id); B.selected=null; B.mode='select'; if(readyAllies().length===0) enemyPhase(); else renderBattleScreen(); return; }
+  if(action==='cancel'){ B.mode='select'; B.spell=null; B.item=null; renderBattleScreen(); return; }
+  if(action==='endphase'){ enemyPhase(); return; }
+  if(action==='retreat'){ G.gold=Math.max(0,G.gold-25); B=null; save(); setView('town'); toast('You retreat to safety.'); return; }
+  if(action.startsWith('spell:')){ const id=action.split(':')[1]; if(G.units[sel.id].mp<spells[id].cost) return toast('Not enough MP.'); B.mode='spell'; B.spell=id; renderBattleScreen(); return; }
+  if(action.startsWith('use:')){ const id=action.split(':')[1]; if(!(G.items[id]>0)) return toast('You have none left.'); B.mode='item'; B.item=id; renderBattleScreen(); return; }
+}
+
+// Events
+addEventListener('click',e=>{
+  const dlg=e.target.closest('[data-dialog]'); if(dlg && dialog){const b=dialog.buttons[+dlg.dataset.dialog]; closeDialog(); if(b && b.act && b.act!=='close') act(b.act); return;}
+  const inl=e.target.closest('[data-inline]'); if(inl){const a=inl.dataset.inline; if(a==='close'){closeDialog();return;} if(a.startsWith('talk:')){const id=a.split(':')[1]; closeDialog(); showDialog(npcs[id].name,npcs[id].text,[{label:'Close',act:'close'}]); return;} }
+  const actBtn=e.target.closest('[data-act]'); if(actBtn) act(actBtn.dataset.act);
+  const bBtn=e.target.closest('[data-bact]'); if(bBtn) battleAct(bBtn.dataset.bact);
+});
+addEventListener('change',e=>{if(e.target.id==='importFile'){const file=e.target.files?.[0]; if(!file) return; file.text().then(t=>{const x=JSON.parse(t); if(!x.party||!x.units) throw Error(); G=x; save(); setView('town'); toast('Save imported.');}).catch(()=>toast('Save not recognized.')); }});
+
+// canvas interaction
+addEventListener('click',e=>{const cv=e.target.closest('#battleCanvas'); if(!cv||!B) return; const rect=cv.getBoundingClientRect(); const x=Math.floor((e.clientX-rect.left)/rect.width*10); const y=Math.floor((e.clientY-rect.top)/rect.height*8); battleTap(x,y);});
+if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+// init
+render();
+</script>
+</body>
+</html>

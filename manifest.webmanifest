@@ -1,0 +1,16 @@
+{
+  "name": "Children of Chaos: Stormbound Coast Remaster",
+  "short_name": "Chaos Coast",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#11152a",
+  "theme_color": "#1f2344",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
